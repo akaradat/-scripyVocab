@@ -1,2 +1,0 @@
-# scripyVocab
-edit in omen
