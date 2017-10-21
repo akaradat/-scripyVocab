@@ -15,14 +15,19 @@ def cls():
 def random_word():
 	global vocab
 	global word_vocab
-	while len(word_vocab)<5:
+	while len(word_vocab)<10:
 		tmp=random.choice(vocab)
 		if tmp not in word_vocab:
 			word_vocab.append(tmp)
 
 
-#def learn_vocab():
-	
+def learn_vocab():
+	global word_vocab
+	print "--------Learn station--------\n"
+	print "How much that you can remember?(# Exit)"
+	for i in range(5):
+		print "[en] ",word_vocab[i]
+
 
 
 def setting():
@@ -65,7 +70,4 @@ def home():
 
 	print "Good bye!"		
 
-#home()
-random_word()
-for i in word_vocab:
-	print i
+home()
