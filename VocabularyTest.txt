@@ -1,0 +1,6 @@
+ant
+bird
+cat
+dog
+egg
+fish
