@@ -1,16 +1,20 @@
 #-*-coding: utf-8 -*-
-import os,random
+import os,random,json,requests
 
 vocab=open('vocabulary.txt').read().split()
 word_vocab=[]
+trans_vocab1=[]
+trans_vocab2=[]
+
 lan1='th'
-lan2='ja'
+lan2='fr'
 
 def cls():
 	if(os.name=='nt'):
 		os.system('cls')
 	else :
-		print("\033[H\033[J")
+		os.system('clear')
+		#print("\033[H\033[J")
 
 def random_word():
 	global vocab
@@ -20,14 +24,31 @@ def random_word():
 		if tmp not in word_vocab:
 			word_vocab.append(tmp)
 
+def get_translate():
+	global trans_vocab1
+	global trans_vocab2
+	for i in range(5):
+		url1='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=%s&dt=t&q=%s'%(lan1,word_vocab[i])
+		url2='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=%s&dt=t&q=%s'%(lan2,word_vocab[i])
+
+		trans_vocab1.append(json.loads(requests.get(url1).text)[0][0][0])
+		trans_vocab2.append(json.loads(requests.get(url2).text)[0][0][0])
+
+
+
+#def dictation():
+
 
 def learn_vocab():
 	global word_vocab
-	print "--------Learn station--------\n"
-	print "How much that you can remember?(# Exit)"
-	for i in range(5):
-		print "[en] ",word_vocab[i]
-
+	random_word()
+	x=''
+	while(x!='#'):
+		print "--------Learn station--------\n"
+		print "How much that you can remember?(# Exit)"
+		for i in range(5):
+			print "[en] ",word_vocab[i]
+		x=raw_input("press enter to continue")
 
 
 def setting():
@@ -70,4 +91,14 @@ def home():
 
 	print "Good bye!"		
 
-home()
+#home()
+random_word()
+get_translate()
+for i in word_vocab:
+	print i
+print "\n"
+for i in trans_vocab1:
+	print i
+print "\n"
+for i in trans_vocab2:
+	print i
