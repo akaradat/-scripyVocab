@@ -1,9 +1,38 @@
 #-*-coding: utf-8 -*-
+import os
+
 
 
 ip1=''
+lan1='th'
+lan2='ja'
 
-while(ip1!='#')
+def cls():
+	if(os.name=='nt'):
+		os.system('cls')
+	else :
+		print("\033[H\033[J")
+
+def setting():
+	global lan1
+	global lan2
+	x=''
+	while(x!='#'):
+		cls()
+		print "--------Setting Language-------"
+		print "First language: ",lan1
+		print "Second language: ",lan2
+		print "press 1 or 2 to setting language. # to exit."
+		x=raw_input("Select: ")
+
+		if x=='1':
+			lan1=raw_input("Input first language: ")
+		elif x=='2':
+			lan2=raw_input("Input second language: ")
+		
+
+while(ip1!='#'):
+	cls()
 	print "---------- Welcome to Scripy Vocab ----------"
 	print "\t1.Learn vocabuary"
 	print "\t2.Hangman Game"
@@ -14,9 +43,14 @@ while(ip1!='#')
 
 	if (ip1=='1'):
 		learn_vocab()
-	elif (ip1='2'):
+	elif (ip1=='2'):
 		hangman()
-	elif (ip1='3'):
+	elif (ip1=='3'):
 		word_shuffle()
-	elif (ip1='4'):
+	elif (ip1=='4'):
 		setting()
+
+print "Good bye!"		
+
+
+
