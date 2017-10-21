@@ -50,7 +50,6 @@ while(ip1!='#'):
 	elif (ip1=='4'):
 		setting()
 
-print "Good bye!"		
-
+print "Good bye!"
 
 
