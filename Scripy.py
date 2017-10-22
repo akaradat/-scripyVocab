@@ -17,12 +17,15 @@ def cls():
 
 def animate():
 	global done
-	for c in itertools.cycle(['|', '/', '-', '\\']):
+	done=False
+	for c in itertools.cycle(['.  ', '.. ', '...', '   ']):
 		if done:
 			break
-		cls()
-		print('\rloading ' + c)
-		time.sleep(0.1)
+		#cls()
+		#print('\rloading ' + c)
+		sys.stdout.write('\rLOADING PLEASE WAIT' + c)
+		sys.stdout.flush()
+		time.sleep(0.3)
 		
 		
 
@@ -50,6 +53,8 @@ def dictation():
 	global word_vocab
 
 def loading():
+	global done
+	done = False
 	t = threading.Thread(target=animate)
 	t.start()
 
@@ -59,17 +64,23 @@ def learn_vocab():
 	global trans_vocab1
 	global trans_vocab2
 	global done
-	#cls()
+	cls()
+	print "--------Learn station--------\n"
+	print "How much that you can remember?(# Exit)\n"
+	x=raw_input("press enter to start")
+	cls()
+	print "--------Learn station--------\n"
+	print "How much that you can remember?(# Exit)\n"
 	loading()
 	#print "LOADING PLEASE WAIT..."
 	random_word()
 	get_translate()
 	done=True
-	x=''
 	while(x!='#'):
 		cls()
 		print "--------Learn station--------\n"
-		print "How much that you can remember?(# Exit)\n"
+		print "How much that you can remember?(# Exit)"
+		print "-----------------------------------------"
 		tmp=['','','']
 		for i in range(5):
 			tmp[0]='[%s] %s'%('en',word_vocab[i])
@@ -79,6 +90,7 @@ def learn_vocab():
 				tmp[2]= '[%s] %s'%(lan[1],trans_vocab2[i])
 			print "%-15s%-15s\t%s"%(tmp[0],tmp[1],tmp[2])
 			#print "\n"
+		print "-----------------------------------------"
 		x=raw_input("press enter to continue")
 
 
