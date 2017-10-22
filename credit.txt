@@ -1,0 +1,7 @@
+credit.
+
+http://greenteapress.com/wp/think-python/
+
+https://ctrlq.org/code/19909-google-translate-api
+
+https://stackoverflow.com/questions/22029562/python-how-to-make-simple-animated-loading-while-process-is-running
