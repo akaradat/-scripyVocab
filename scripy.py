@@ -37,8 +37,6 @@ def animate():
 	for c in itertools.cycle(['.  ', '.. ', '...', '   ']):
 		if done:
 			break
-		#cls()
-		#print('\rloading ' + c)
 		sys.stdout.write('\rLOADING PLEASE WAIT' + c)
 		sys.stdout.flush()
 		time.sleep(0.3)
@@ -113,7 +111,7 @@ def dictation():
 	cls()
 	print "--------Dictaion--------"
 	print_line(24)
-	print "%10d/%d %s"%(score,5,degree(score,5))
+	print "%7d/%d %s"%(score,5,degree(score,5))
 	print_line(24)
 	print_con()
 	return score
@@ -162,10 +160,48 @@ def learn_vocab():
 		total+=5
 		score+=dictation()
 		cls()
-		print "--------Learn station-------3333-\n"
+		print "--------Learn station-------3-\n"
 		print "total: %d \tyour score: %d \t%s\n"%(total,score,degree(score,total))
-		print "Do you want to play again?"
-		x=raw_input("yes/y or enter to exit : ")
+		while x!= 'n' and x!= 'y':
+			x=raw_input("Do you want to play again? (y/n) : ").lower()
+		
+def word_shuffle():
+	global word_vocab
+	total = 0
+	score = 0
+	x='y'
+	while(x=='yes' or x=='y'):
+		random_word()
+		cls()
+		print "--------Word shuffle-------\n"
+		print_con()
+		for i in word_vocab:
+			cls()
+			print "--------Word shuffle-------\n"
+			total+=1
+			tmp = ' '.join(random.sample(i,len(i)))
+			print tmp
+			y=''
+			while(y!=i):
+				y=raw_input("Input: ")
+				if(y==i):
+					print "----- Correct! -----\n"
+					score+=1
+					print_con()
+				if(y=='#'):
+					break
+				print "----- Try again! -----\n"
+		cls()
+		x=''
+		print "--------Word shuffle-------\n"
+		print "total: %d \tyour score: %d \t%s\n"%(total,score,degree(score,total))
+		while x!= 'n' and x!= 'y':
+			x=raw_input("Do you want to play again? (y/n) : ").lower()
+	
+
+
+
+
 
 
 def setting():
