@@ -1,5 +1,5 @@
 #-*-coding: utf-8 -*-
-import os,random,json,requests,time,threading,itertools,sys
+import os,random,json,requests,time,threading,itertools,sys,signal
 
 vocab=open('vocabulary.txt').read().split()
 word_vocab=[]
@@ -14,7 +14,9 @@ def cls():
 	else :
 		os.system('clear')
 		#print("\033[H\033[J")
-	
+
+def interrupted(signum, frame):
+	raise Exception()
 
 def print_line(x=None):
 	if x is None:
@@ -167,34 +169,54 @@ def learn_vocab():
 		
 def word_shuffle():
 	global word_vocab
-	total = 0
-	score = 0
 	x='y'
+
 	while(x=='yes' or x=='y'):
 		random_word()
+		signal.signal(signal.SIGALRM, interrupted)
+		
 		cls()
 		print "--------Word shuffle-------\n"
 		print_con()
-		for i in word_vocab:
-			cls()
-			print "--------Word shuffle-------\n"
-			total+=1
-			tmp = ' '.join(random.sample(i,len(i)))
-			print tmp
-			y=''
-			while(y!=i):
-				y=raw_input("Input: ")
-				if(y==i):
-					print "----- Correct! -----\n"
-					score+=1
-					print_con()
-				if(y=='#'):
+		check=[0]*10
+		tmp=['']*10
+		for i in range(10):
+			tmp[i] = ' '.join(random.sample(word_vocab[i],len(word_vocab[i])))
+
+		time1=time.time()
+		total = 10
+		score = 0
+		try:
+			signal.alarm(30)
+			for i in itertools.cycle(range(10)):
+				if score == 10:
 					break
-				print "----- Try again! -----\n"
+				elif check[i]==1:
+					continue
+				cls()
+				print "--------Word shuffle-------\n"
+				print tmp[i]
+				y=''
+				while(y!=word_vocab[i]):
+					y=raw_input("Input: ")
+					if(y==word_vocab[i]):
+						print "----- Correct! -----\n"
+						score+=1
+						check[i]=1
+						print_con()
+					if(y=='#'):
+						break
+					print "----- Try again! -----\n"
+			signal.alarm(0)
+			time1=int(time.time()-time1)
+		except:
+			print "\n\n----------- Time out! ------------"
+			print_con()
+			time1='timeout'
 		cls()
 		x=''
 		print "--------Word shuffle-------\n"
-		print "total: %d \tyour score: %d \t%s\n"%(total,score,degree(score,total))
+		print "total: %d \tyour score: %d \t%s\nUsed time : %s"%(total,score,degree(score,total),str(time1))
 		while x!= 'n' and x!= 'y':
 			x=raw_input("Do you want to play again? (y/n) : ").lower()
 	
