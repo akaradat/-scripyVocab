@@ -30,6 +30,7 @@ def print_con():
 def loading():
 	global done
 	done = False
+	print "\n"
 	t = threading.Thread(target=animate)
 	t.start()
 
@@ -69,11 +70,28 @@ def get_translate():
 	global lan
 	trans_vocab1=[]
 	trans_vocab2=[]
+	
 	for i in range(5):
 		url1='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=%s&dt=t&q=%s'%(lan[0],word_vocab[i])
 		url2='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=%s&dt=t&q=%s'%(lan[1],word_vocab[i])
 		trans_vocab1.append(json.loads(requests.get(url1).text)[0][0][0].lower())
 		trans_vocab2.append(json.loads(requests.get(url2).text)[0][0][0].lower())
+	
+
+def print_word_translate():
+	global word_vocab
+	global trans_vocab1
+	global trans_vocab2
+	tmp=['','','']
+	print_line()
+	for i in range(5):
+		tmp[0]='[%s] %s'%('en',word_vocab[i])
+		if(lan[0]!=''):
+			tmp[1]= '[%s] %s'%(lan[0],trans_vocab1[i])
+		if(lan[1]!=''):
+			tmp[2]= '[%s] %s'%(lan[1],trans_vocab2[i])
+		print "%-15s%-15s\t%s"%(tmp[0],tmp[1],tmp[2])
+	print_line()
 
 def dictation():
 	global word_vocab
@@ -138,7 +156,7 @@ def learn_vocab():
 			break
 		cls()
 		print "--------Learn station--------\n"
-		print "How much that you can remember?(# Exit)\n"
+		print "How much that you can remember?(# Exit)"
 		loading()
 		random_word()
 		get_translate()
@@ -146,7 +164,8 @@ def learn_vocab():
 		cls()
 		print "--------Learn station--------\n"
 		print "How much that you can remember?(# Exit)"
-		print_line()
+		
+		'''
 		tmp=['','','']
 		for i in range(5):
 			tmp[0]='[%s] %s'%('en',word_vocab[i])
@@ -155,24 +174,25 @@ def learn_vocab():
 			if(lan[1]!=''):
 				tmp[2]= '[%s] %s'%(lan[1],trans_vocab2[i])
 			print "%-15s%-15s\t%s"%(tmp[0],tmp[1],tmp[2])
-		print_line()
+		'''
+		print_word_translate()
 		x=raw_input("press enter to continue")
 		if(x=='#'):
 			break
 		total+=5
 		score+=dictation()
 		cls()
-		print "--------Learn station-------3-\n"
+		print "--------Learn station--------\n"
 		print "total: %d \tyour score: %d \t%s\n"%(total,score,degree(score,total))
 		while x!= 'n' and x!= 'y':
 			x=raw_input("Do you want to play again? (y/n) : ").lower()
 		
 def word_shuffle():
 	global word_vocab
+	global done
 	x='y'
 
 	while(x=='y'):
-		random_word()
 		signal.signal(signal.SIGALRM, interrupted)
 		
 		cls()
@@ -183,6 +203,10 @@ def word_shuffle():
 		while not (x=='1' or x=='2'):
 			x=raw_input("Number of player(1/2) : ")
 		x=int(x)
+		loading()
+		random_word()
+		get_translate()
+		done=True
 		tmp=['']*10
 		for i in range(10):
 			tmp[i] = ' '.join(random.sample(word_vocab[i],len(word_vocab[i])))
@@ -229,6 +253,8 @@ def word_shuffle():
 			cls()
 			print "--------Word shuffle-------\n"
 			print "player %d score: %d/10 \t%s\nUsed time : %s\n"%(j+1,sum(check[j]),degree(sum(check[j]),total),str(usedtime[j]))
+			print_word_translate()
+			print "\n"
 			print_con()
 		cls()
 		print "--------Word shuffle-------\n"
