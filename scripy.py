@@ -15,8 +15,6 @@ def cls():
 		os.system('clear')
 		#print("\033[H\033[J")
 
-def interrupted(signum, frame):
-	raise Exception()
 
 def print_line(x=None):
 	if x is None:
@@ -173,7 +171,6 @@ def word_shuffle():
 
 	while(x=='y'):
 		random_word()
-		signal.signal(signal.SIGALRM, interrupted)
 		
 		cls()
 		print "--------Word shuffle-------\n"
@@ -197,35 +194,27 @@ def word_shuffle():
 			print "--------Word shuffle-------\n"
 			z=raw_input("Player%d are you ready?\n(press enter to start)"%(j+1))
 			usedtime[j]=time.time()
-
-			try:
-				signal.alarm(30)
-				for i in itertools.cycle(range(10)):
-					if sum(check[j]) == 10:
+			for i in itertools.cycle(range(10)):
+				if sum(check[j]) == 10:
+					break
+				elif check[j][i]==1:
+					continue
+				cls()
+				print "--------Word shuffle-------\n"
+				print "Player %d turn, press # to skip.\n"%(j+1)
+				#print "------ %s ------\n"%tmp[i]
+				print tmp[i].center(27,'-')
+				y=''
+				while(y!=word_vocab[i]):
+					y=raw_input("Input: ")
+					if(y==word_vocab[i]):
+						print "----- Correct! -----\n"
+						check[j][i]=1
+						print_con()
+					if(y=='#'):
 						break
-					elif check[j][i]==1:
-						continue
-					cls()
-					print "--------Word shuffle-------\n"
-					print "Player %d turn, press # to skip.\n"%(j+1)
-					#print "------ %s ------\n"%tmp[i]
-					print tmp[i].center(27,'-')
-					y=''
-					while(y!=word_vocab[i]):
-						y=raw_input("Input: ")
-						if(y==word_vocab[i]):
-							print "----- Correct! -----\n"
-							check[j][i]=1
-							print_con()
-						if(y=='#'):
-							break
-						print "----- Try again! -----\n"
-				signal.alarm(0)
-				usedtime[j]=int(time.time()-usedtime[j])
-			except:
-				print "\n\n----------- Time out! ------------"
-				print_con()
-				usedtime[j]='timeout'
+					print "----- Try again! -----\n"
+			usedtime[j]=int(time.time()-usedtime[j])
 			cls()
 			print "--------Word shuffle-------\n"
 			print "player %d score: %d/10 \t%s\nUsed time : %s\n"%(j+1,sum(check[j]),degree(sum(check[j]),total),str(usedtime[j]))
