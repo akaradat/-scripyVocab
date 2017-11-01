@@ -171,55 +171,85 @@ def word_shuffle():
 	global word_vocab
 	x='y'
 
-	while(x=='yes' or x=='y'):
+	while(x=='y'):
 		random_word()
 		signal.signal(signal.SIGALRM, interrupted)
 		
 		cls()
 		print "--------Word shuffle-------\n"
-		print_con()
-		check=[0]*10
+		x=0
+		print "Sort the shuffle letter to word."
+		print "Time limit 60 sec and # to skip.\n"
+		while not (x=='1' or x=='2'):
+			x=raw_input("Number of player(1/2) : ")
+		x=int(x)
 		tmp=['']*10
 		for i in range(10):
 			tmp[i] = ' '.join(random.sample(word_vocab[i],len(word_vocab[i])))
+			while(tmp[i].replace(' ','')==word_vocab[i]):
+				tmp[i] = ' '.join(random.sample(word_vocab[i],len(word_vocab[i])))
 
-		time1=time.time()
-		total = 10
-		score = 0
-		try:
-			signal.alarm(30)
-			for i in itertools.cycle(range(10)):
-				if score == 10:
-					break
-				elif check[i]==1:
-					continue
-				cls()
-				print "--------Word shuffle-------\n"
-				print tmp[i]
-				y=''
-				while(y!=word_vocab[i]):
-					y=raw_input("Input: ")
-					if(y==word_vocab[i]):
-						print "----- Correct! -----\n"
-						score+=1
-						check[i]=1
-						print_con()
-					if(y=='#'):
+		check=[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+		usedtime=[0]*x
+		total =10
+		for j in range(x):
+			cls()
+			print "--------Word shuffle-------\n"
+			z=raw_input("Player%d are you ready?\n(press enter to start)"%(j+1))
+			usedtime[j]=time.time()
+
+			try:
+				signal.alarm(30)
+				for i in itertools.cycle(range(10)):
+					if sum(check[j]) == 10:
 						break
-					print "----- Try again! -----\n"
-			signal.alarm(0)
-			time1=int(time.time()-time1)
-		except:
-			print "\n\n----------- Time out! ------------"
+					elif check[j][i]==1:
+						continue
+					cls()
+					print "--------Word shuffle-------\n"
+					print "Player %d turn, press # to skip.\n"%(j+1)
+					#print "------ %s ------\n"%tmp[i]
+					print tmp[i].center(27,'-')
+					y=''
+					while(y!=word_vocab[i]):
+						y=raw_input("Input: ")
+						if(y==word_vocab[i]):
+							print "----- Correct! -----\n"
+							check[j][i]=1
+							print_con()
+						if(y=='#'):
+							break
+						print "----- Try again! -----\n"
+				signal.alarm(0)
+				usedtime[j]=int(time.time()-usedtime[j])
+			except:
+				print "\n\n----------- Time out! ------------"
+				print_con()
+				usedtime[j]='timeout'
+			cls()
+			print "--------Word shuffle-------\n"
+			print "player %d score: %d/10 \t%s\nUsed time : %s\n"%(j+1,sum(check[j]),degree(sum(check[j]),total),str(usedtime[j]))
 			print_con()
-			time1='timeout'
 		cls()
-		x=''
 		print "--------Word shuffle-------\n"
-		print "total: %d \tyour score: %d \t%s\nUsed time : %s"%(total,score,degree(score,total),str(time1))
+		if(x==1):
+			print ""
+		elif(sum(check[0])>sum(check[1])):
+			print "The winner is player 1\n"
+		elif(sum(check[1])>sum(check[0])):
+			print "The winner is player 2\n"
+		elif(usedtime[0]==usedtime[1]):
+			print "Draw!"
+		elif(usedtime[0]<usedtime[1]):
+			print "The winner is player 1\n"
+		else:
+			print "The winner is player 2\n"
+
+		
+		
 		while x!= 'n' and x!= 'y':
 			x=raw_input("Do you want to play again? (y/n) : ").lower()
-	
+
 
 
 

@@ -1,7 +1,10 @@
-ant
-bird
-cat
-dog
-egg
-fish
-Van
+oa
+ob
+oc
+od
+oe
+of
+og
+oh
+oi
+oj
