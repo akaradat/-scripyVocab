@@ -318,8 +318,8 @@ def home():
 			word_shuffle()
 		elif (x=='4'):
 			setting()
-
-	print "Good bye!"		
+	cls()
+	print "\n\n\n\n\n\n================= Good bye! =================\n\n\n\n\n\n\n\n"		
 
 home()
 '''
