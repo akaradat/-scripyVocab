@@ -1,7 +1,18 @@
 #-*-coding: utf-8 -*-
 import os,random,json,requests,time,threading,itertools,sys,signal
+from bs4 import BeautifulSoup 
+#textname='vocabularyTest.txt'
+#vocab=open(textname).read().split()
 
-vocab=open('vocabulary.txt').read().split()
+url="http://www.manythings.org/vocabulary/lists/a/words.php?f=animals_1"
+page=requests.get(url)
+soup = BeautifulSoup(page.content,'html.parser')
+
+
+catalog_now="Animals"
+catalog_amount=29
+catalog_selected=3
+vocab=[]
 word_vocab=[]
 trans_vocab1=[]
 trans_vocab2=[]
@@ -28,8 +39,6 @@ def print_con():
 	x=raw_input("press enter to continue.")
 
 def loading():
-	global done
-	done = False
 	print "\n"
 	t = threading.Thread(target=animate)
 	t.start()
@@ -55,28 +64,64 @@ def degree(a,b):
 	else:
 		return "Try harder"
 
-def random_word():
+def getvocab(x):
 	global vocab
-	global word_vocab
-	word_vocab=[]
-	while len(word_vocab)<10:
-		tmp=random.choice(vocab).lower()
-		if tmp not in word_vocab:
-			word_vocab.append(tmp)
+	global catalog_now
+	global done
+	#find url of catalog
+
+	page=requests.get("http://www.manythings.org/vocabulary/lists/a/")
+	soup = BeautifulSoup(page.content,'html.parser')
+	url="http://www.manythings.org/vocabulary/lists/a/"+soup.find_all('a')[x]['href']
+	catalog_now=soup.find_all('a')[x].text
+	#get vocab
+	page=requests.get(url)
+	soup = BeautifulSoup(page.content,'html.parser')
+	for x in soup.find_all('li'):
+		vocab.append(x.text)
+
 
 def get_translate():
+	global done
 	global trans_vocab1
 	global trans_vocab2
 	global lan
 	trans_vocab1=[]
 	trans_vocab2=[]
 	
+	loading()
+
 	for i in range(5):
 		url1='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=%s&dt=t&q=%s'%(lan[0],word_vocab[i])
 		url2='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=%s&dt=t&q=%s'%(lan[1],word_vocab[i])
 		trans_vocab1.append(json.loads(requests.get(url1).text)[0][0][0].lower())
 		trans_vocab2.append(json.loads(requests.get(url2).text)[0][0][0].lower())
 	
+	done = True
+
+def random_word(n):
+	global vocab
+	global word_vocab
+	word_vocab=[]
+	if len(vocab) < n:
+			getvocab(catalog_selected)
+	
+	while True:
+		tmp=random.choice(vocab).lower()
+		if tmp not in word_vocab:
+			word_vocab.append(tmp)
+			if len(word_vocab) == n:
+				break
+
+	get_translate()
+
+def delword():
+	global vocab
+	global word_vocab
+	for i in word_vocab:
+		vocab.remove(i)
+
+
 
 def print_word_translate():
 	global word_vocab
@@ -142,7 +187,6 @@ def learn_vocab():
 	global lan
 	global trans_vocab1
 	global trans_vocab2
-	global done
 	total = 0
 	score = 0
 	
@@ -152,33 +196,17 @@ def learn_vocab():
 		print "--------Learn station--------\n"
 		print "How much that you can remember?(# Exit)\n"
 		x=raw_input("press enter to start")
-		if(x=='#'):
-			break
 		cls()
 		print "--------Learn station--------\n"
 		print "How much that you can remember?(# Exit)"
-		loading()
-		random_word()
-		get_translate()
-		done=True
+		random_word(5)
+		
 		cls()
 		print "--------Learn station--------\n"
 		print "How much that you can remember?(# Exit)"
 		
-		'''
-		tmp=['','','']
-		for i in range(5):
-			tmp[0]='[%s] %s'%('en',word_vocab[i])
-			if(lan[0]!=''):
-				tmp[1]= '[%s] %s'%(lan[0],trans_vocab1[i])
-			if(lan[1]!=''):
-				tmp[2]= '[%s] %s'%(lan[1],trans_vocab2[i])
-			print "%-15s%-15s\t%s"%(tmp[0],tmp[1],tmp[2])
-		'''
 		print_word_translate()
 		x=raw_input("press enter to continue")
-		if(x=='#'):
-			break
 		total+=5
 		score+=dictation()
 		cls()
@@ -186,10 +214,10 @@ def learn_vocab():
 		print "total: %d \tyour score: %d \t%s\n"%(total,score,degree(score,total))
 		while x!= 'n' and x!= 'y':
 			x=raw_input("Do you want to play again? (y/n) : ").lower()
+		delword()
 		
 def word_shuffle():
 	global word_vocab
-	global done
 	x='y'
 
 	while(x=='y'):
@@ -203,10 +231,7 @@ def word_shuffle():
 		while not (x=='1' or x=='2'):
 			x=raw_input("Number of player(1/2) : ")
 		x=int(x)
-		loading()
-		random_word()
-		get_translate()
-		done=True
+		random_word(10)
 		tmp=['']*10
 		for i in range(10):
 			tmp[i] = ' '.join(random.sample(word_vocab[i],len(word_vocab[i])))
@@ -276,38 +301,74 @@ def word_shuffle():
 		while x!= 'n' and x!= 'y':
 			x=raw_input("Do you want to play again? (y/n) : ").lower()
 
+		delword()
 
-
-
-
-
-
-def setting():
+def settinglan():
 	global lan
 	x=''
 	while(x!='#'):
 		cls()
 		print "--------Setting Language-------"
-		print "First language: ",lan[0]
-		print "Second language: ",lan[1]
-		print "press 1 or 2 to setting language. # to exit."
+		print "\t[1].First language: ",lan[0]
+		print "\t[2].Second language: ",lan[1]
+		print "\t #  Exit"
 		x=raw_input("Select: ")
 
 		if x=='1':
 			lan[0]=raw_input("Input first language: ")
 		elif x=='2':
 			lan[1]=raw_input("Input second language: ")
+
+def showvocablist():
+	page=requests.get("http://www.manythings.org/vocabulary/lists/a/")
+	soup = BeautifulSoup(page.content,'html.parser') 
+	i=1
+	print ""
+	for x in soup.find_all('li'):
+		print "[%d] %s"%(i,x.text)
+		i=i+1
+	catalog_amount=i-1
 		
+def settingvocab():
+	x=''
+	while(x!='#'):
+		cls()
+		print "-------- Setting vocab -------\n"
+		print "----------- vocab catalog -----------"
+		showvocablist()
+		print_line()
+		print "Catalog now: %s"%(catalog_now)
+		x=raw_input("Select (# to exit): ")
+		if(x.isdigit()):
+			if(int(x)>=1 and int(x)<=catalog_amount):
+				catalog_select=int(x)
+				getvocab(catalog_select)
+
+
+def setting():
+	x=''
+	while(x!='#'):
+		cls()
+		print "-------- Setting -------"
+		print "\t[1].language"
+		print "\t[2].vocab"
+		print "\t #  Exit"
+		x=raw_input("Select: ")
+		if x=='1':
+			settinglan()
+		elif x=='2':
+			settingvocab()
+
 def home():
 	x=''
 	while(x!='#'):
 		cls()
 		print "---------- Welcome to Scripy Vocab ----------"
-		print "\t1.Learn vocabuary"
-		print "\t2.Hangman Game"
-		print "\t3.Word shuffle Game"
-		print "\t4.Setting"
-		print "\t# Exit"
+		print "\t[1].Learn vocabuary"
+		print "\t[2].Hangman Game"
+		print "\t[3].Word shuffle Game"
+		print "\t[4].Setting"
+		print "\t #  Exit"
 		x=raw_input("Select: ")
 
 		if (x=='1'):
