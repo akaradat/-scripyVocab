@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup
 catalog_now="Animals"
 catalog_amount=29
 catalog_selected=3
+slan=[]
+llan=[]
 vocab=[]
 word_vocab=[]
 trans_vocab1=[]
@@ -68,8 +70,8 @@ def getvocab(x):
 	global vocab
 	global catalog_now
 	global done
+	
 	#find url of catalog
-
 	vocab=[]
 	page=requests.get("http://www.manythings.org/vocabulary/lists/a/")
 	soup = BeautifulSoup(page.content,'html.parser')
@@ -335,12 +337,6 @@ def hangman():
 
 
 
-
-
-
-
-
-
 def word_shuffle():
 	global word_vocab
 	global vocab
@@ -351,7 +347,7 @@ def word_shuffle():
 		cls()
 		print " Word shuffle ".center(30,'-'),'\n'
 		x=0
-		print "Sort the shuffle letter to word."
+		print "Sort the shuffle letter."
 		print "Time limit 60 sec and # to skip.\n"
 		while not (x=='1' or x=='2'):
 			x=raw_input("Number of player(1/2) : ")
@@ -427,21 +423,66 @@ def word_shuffle():
 
 		delword()
 
+def getlan():
+	global slan
+	global llan
+	global done
+	
+	if not slan:
+		loading()
+		inurl="https://cloud.google.com/translate/docs/languages"
+		inpage=requests.get(inurl)
+		insoup = BeautifulSoup(inpage.content,'html.parser')
+		slan.append('')
+		llan.append('')
+		for i in range(len(insoup.find_all('tbody')[0])/2):
+			j=insoup.find_all('tbody')[0].find_all('tr')[i].find_all('td')
+			llan.append(j[0].text)
+			slan.append(j[1].text)
+		done=True
+
+def showlan():
+	global slan
+	global llan
+	print '\n'," Available language ".center(30,'-'),'\n'
+	for i in range(len(slan)-1):
+		print "\t%s : %s"%(slan[i+1].split()[0],llan[i+1])
+
+
 def settinglan():
 	global lan
 	x=''
+	
+	getlan()
 	while(x!='#'):
 		cls()
 		print " Setting Language ".center(30,'-')
 		print "\t[1].First language: ",lan[0]
 		print "\t[2].Second language: ",lan[1]
+		print "\t[3].Show language available"
 		print "\t #  Back"
 		x=raw_input("Select: ")
 
 		if x=='1':
-			lan[0]=raw_input("Input first language: ")
+			y=raw_input("Input first language: ")
+			if(y in slan):
+				lan[0]=y
+			else:
+				print "Unavailable language!\n"
+				print_con()
+
 		elif x=='2':
-			lan[1]=raw_input("Input second language: ")
+			y=raw_input("Input second language: ")
+			if(y in slan):
+				lan[1]=y
+			else:
+				print "Unavailable language!\n"
+				print_con()
+		elif x=='3':
+			showlan()
+			print_con()
+
+		
 
 def showvocablist():
 	page=requests.get("http://www.manythings.org/vocabulary/lists/a/")
