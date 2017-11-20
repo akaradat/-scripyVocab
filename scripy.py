@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 #page=requests.get(url)
 #soup = BeautifulSoup(page.content,'html.parser')
 
-
+count_learn=[0,0]
 catalog_now="Animals"
 catalog_amount=29
 catalog_selected=3
@@ -185,6 +185,8 @@ def dictation():
 	print "%7d/%d %s"%(score,5,degree(score,5))
 	print_line(30)
 	print_con()
+	count_learn[0]+=5
+	count_learn[1]+=score
 	return score
 
 
@@ -327,7 +329,8 @@ def hangman():
 			print "The winner is player 1\n"
 		else:
 			print "The winner is player 2\n"
-		
+		count_learn[0]+=5
+		count_learn[1]+=score[0]
 
 		while True:
 			x=raw_input("Do you want to play again? (y/n) : ").lower()
@@ -416,6 +419,8 @@ def word_shuffle():
 		else:
 			print "The winner is player 2\n"
 
+		count_learn[0]+=5
+		count_learn[1]+=sum(check[0])
 		
 		
 		while x!= 'n' and x!= 'y':
@@ -546,7 +551,8 @@ def home():
 		elif (x=='4'):
 			setting()
 	cls()
-	print "\n\n\n\n\n\n",' Good bye! '.center(50,"="),"\n\n\n\n\n\n\n\n"		
+
+	print "\n\n\n\n\n\n",' Total vocab: %d You learned: %d '.center(50,"=")%(count_learn[0],count_learn[1]),'\n',' Good bye! '.center(50,"="),"\n\n\n\n\n\n\n\n"		
 
 home()
 '''
