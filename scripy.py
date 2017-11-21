@@ -124,10 +124,21 @@ def delword():
 	global vocab
 	global word_vocab
 	for i in word_vocab:
-		print i
 		vocab.remove(i)
 
-
+def print_tran(str):
+	global word_vocab
+	global trans_vocab1
+	global trans_vocab2
+	tmp=['','','']
+	i=word_vocab.index(str)
+	tmp[0]='[%s] %s'%('en',word_vocab[i])
+	if(lan[0]!=''):
+		tmp[1]= '[%s] %s'%(lan[0],trans_vocab1[i])
+	if(lan[1]!=''):
+		tmp[2]= '[%s] %s'%(lan[1],trans_vocab2[i])
+	#print "%-15s%-15s\t%s"%(tmp[0],tmp[1],tmp[2])
+	return "%-15s%-15s\t%s"%(tmp[0],tmp[1],tmp[2])
 
 def print_word_translate():
 	global word_vocab
@@ -290,13 +301,19 @@ def hangman():
 						if(''.join(tmp[i])==word_vocab[i]):
 							p[i]=1
 							print '\n'," Correct! ".center(30,'-')
-							print 'Answer is',word_vocab[i],'\n'
+							
+							print print_tran(word_vocab[i])
+							print_line()
+							#print 'Answer is',word_vocab[i],'\n'
 							print_con()
 							break
 						if(count[i]>=5):
 							p[i]=-1
 							print '\n',' Wrong! '.center(30,'-')
-							print 'Answer is',word_vocab[i],'\n'
+							
+							print print_tran(word_vocab[i])
+							print_line()
+							#print 'Answer is',word_vocab[i],'\n'
 							print_con()
 
 				signal.alarm(0)
@@ -386,8 +403,12 @@ def word_shuffle():
 					while(y!=word_vocab[i]):
 						y=raw_input("Input: ")
 						if(y==word_vocab[i]):
-							print " Correct! ".center(30,'-'),'\n'
+							
+							print '\n'," Correct! ".center(30,'-')
 							check[j][i]=1
+							#print_line()
+							print print_tran(word_vocab[i])
+							print_line()
 							print_con()
 						if(y=='#'):
 							break
@@ -555,19 +576,4 @@ def home():
 	print "\n\n\n\n\n\n",' Total vocab: %d You learned: %d '.center(50,"=")%(count_learn[0],count_learn[1]),'\n',' Good bye! '.center(50,"="),"\n\n\n\n\n\n\n\n"		
 
 home()
-'''
-random_word()
-get_translate()
-dictation()
 
-random_word()
-get_translate()
-for i in word_vocab:
-	print i
-print "\n"
-for i in trans_vocab1:
-	print i
-print "\n"
-for i in trans_vocab2:
-	print i
-	'''
